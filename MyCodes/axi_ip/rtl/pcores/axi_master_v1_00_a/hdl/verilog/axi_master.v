@@ -354,7 +354,7 @@ always @(posedge ACLK)
        awvalid <= 1'b0; 
      
      // If previously not valid and no throttling, start next transaction
-     else if (C_M_AXI_SUPPORTS_WRITE && awvalid==0 && aw_throttle == 0)
+     else if ( awvalid==0 && aw_throttle == 0)
        awvalid <= 1'b1;
      
      /* Once asserted, VALIDs cannot be deasserted, so AWVALID
@@ -411,7 +411,7 @@ always @(posedge ACLK)
        wvalid <= 1'b0; 
      
      // If previously not valid and not throttling, start next transaction
-     else if (C_M_AXI_SUPPORTS_WRITE && wvalid==0 && w_throttle == 0)
+     else if (wvalid==0 && w_throttle == 0)
        wvalid <= 1'b1;
 
      /* If WREADY and too many writes, throttle WVALID
@@ -506,7 +506,7 @@ always @(posedge ACLK)
 	  arvalid <= 1'b0;
 	  araddr_offset <= araddr_offset + C_M_AXI_BURST_LEN * C_M_AXI_DATA_WIDTH/8;
        end
-     else if (C_M_AXI_SUPPORTS_READ && ar_throttle == 0)
+     else if ( ar_throttle == 0)
        begin
 	  arvalid <= 1'b1;
 	  araddr_offset <= araddr_offset;
@@ -632,7 +632,7 @@ always @(posedge ACLK)
   begin
      if (reset_start == 0)
        w_issue_count <= 'b0;
-     else if (bready && M_AXI_BVALID && (M_AXI_WLAST & M_AXI_WVALID && M_AXI_WREADY))
+	  else if (bready && M_AXI_BVALID && (M_AXI_WLAST && M_AXI_WVALID && M_AXI_WREADY))
        w_issue_count <= w_issue_count;
      else if (bready && M_AXI_BVALID)
        w_issue_count <= w_issue_count - 1;
@@ -661,7 +661,7 @@ always @(posedge ACLK)
   If the write logic is removed, never throttle reads */
 always @(unread_writes)
   begin
-     if (unread_writes > 0 || C_M_AXI_SUPPORTS_WRITE == 0)
+	  if (unread_writes > 0 )
        ar_throttle = 1'b0;
      else
        ar_throttle = 1'b1;
@@ -672,7 +672,7 @@ issued but not yet completed write addresses is equal or greater than a threshol
  throttle the address write channel. */ 
 always @(aw_issue_count,unread_writes)
   begin
-     if (C_M_AXI_SUPPORTS_READ && (aw_issue_count + unread_writes >= C_INTERCONNECT_M_AXI_WRITE_ISSUING))
+     if ((aw_issue_count + unread_writes >= C_INTERCONNECT_M_AXI_WRITE_ISSUING))
        aw_throttle = 1'b1;
      else
        aw_throttle = 1'b0;
@@ -683,7 +683,7 @@ always @(aw_issue_count,unread_writes)
  throttle the address write channel. */    
 always @(w_issue_count,unread_writes)
   begin
-     if (C_M_AXI_SUPPORTS_READ && (w_issue_count + unread_writes >= C_INTERCONNECT_M_AXI_WRITE_ISSUING))
+     if ( (w_issue_count + unread_writes >= C_INTERCONNECT_M_AXI_WRITE_ISSUING))
        w_throttle = 1'b1;
      else
        w_throttle = 1'b0;
