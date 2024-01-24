@@ -632,7 +632,7 @@ always @(posedge ACLK)
   begin
      if (reset_start == 0)
        w_issue_count <= 'b0;
-     else if (bready && M_AXI_BVALID && (M_AXI_WLAST & M_AXI_WVALID && M_AXI_WREADY))
+	  else if (bready && M_AXI_BVALID && (M_AXI_WLAST && M_AXI_WVALID && M_AXI_WREADY))
        w_issue_count <= w_issue_count;
      else if (bready && M_AXI_BVALID)
        w_issue_count <= w_issue_count - 1;
