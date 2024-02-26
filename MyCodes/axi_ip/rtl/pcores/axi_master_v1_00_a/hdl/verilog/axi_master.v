@@ -424,8 +424,7 @@ always @(posedge ACLK)
   end
 
 //WLAST generation on the MSB of a counter underflow
-assign wlast = wlen_count[C_WLEN_COUNT_WIDTH-1];
-
+	assign wlast = (wlen_count == 0) ;
 /* Burst length counter. Uses extra counter register bit to indicate terminal
  count to reduce decode logic */    
 always @(posedge ACLK)
